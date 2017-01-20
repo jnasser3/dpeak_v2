@@ -1,10 +1,10 @@
 % Run using
-% roast_and_brew_plates('../small_test/plate_list.grp','/cmap/users/jnasser/dpeak_v2/small_test2')
+% roast_and_brew_plates('../small_test/plate_list.grp','/cmap/users/jnasser/dpeak_v2/small_test3')
 
 
 function roast_and_brew_plates(plate,plate_path)
 
-cd /cmap/users/jnasser/code/espresso/
+%cd /cmap/users/jnasser/code/espresso/
 
 %% Roast the plates
 roast('plate',fullfile(plate_path,plate), ...

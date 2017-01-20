@@ -1,7 +1,7 @@
 function compare_susp_mat(susp1,susp2)
 
 %% Params
-susp_cutoff = 10
+susp_cutoff = 5
 
 %% setup
 common_ids = intersect(susp1.cid,susp2.cid);
@@ -29,6 +29,7 @@ figure;
 data1 = sum(susp1.mat > susp_cutoff,2);
 data2 = sum(susp2.mat > susp_cutoff,2);
 scatter(data1,data2)
+text(data1,data2,gen_labels(978))
 grid on
 
 % figure
