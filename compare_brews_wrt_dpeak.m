@@ -1,4 +1,4 @@
-function [susp1,susp2,brew1,brew2] = compare_brews_wrt_dpeak(brewdir1,brewdir2)
+function [susp1,susp2,brew1,brew2] = compare_brews_wrt_dpeak(brewdir1,brewdir2,name1,name2)
 
 %% Load in matrices
 roast1 = parse_gctx(strtrim(ls(fullfile(brewdir1,'*ZSPCQNORM*.gctx'))));
@@ -22,7 +22,7 @@ susp1 = compute_misscall_suspects_per_brew_gene(brew1,roast1);
 susp2 = compute_misscall_suspects_per_brew_gene(brew2,roast2);
 
 %% Plots
-compare_susp_mat(susp1,susp2)
+compare_susp_mat(susp1,susp2,name1,name2)
 
 %% Signature strength of DMSO
 figure
@@ -40,8 +40,8 @@ hold on
 plot([min_lim max_lim],[min_lim max_lim],'r:')
 grid on
 title('Sig Strength of DMSO')
-xlabel('Data1')
-ylabel('Data2')
+xlabel(name1)
+ylabel(name2)
 
 %% S-C plots comparison
 figure
@@ -61,6 +61,9 @@ ss2 = cell2mat(sc2.cdesc(:,sc2.cdict('distil_ss')));
 scatter(rr1,ss1,[],'b')
 hold on
 scatter(rr2,ss2,[],'r')
+
+%% Overall distribution of zscores
+
 
 end
 

@@ -1,6 +1,6 @@
 %Compute suspect zscores on A2
 
-cells = {'A375','A549','HT29','HEPG2','HCC515','HA1E','MCF7','PC3','VCAP'};
+cells = {'A375','YAPC','MCF7','HA1E','PC3','HELA','HT29'};
 
 susp_cutoff = 5;
 
@@ -10,10 +10,14 @@ figure(1); ax1 = gca;
 figure(2); ax2 = gca;
 figure(3); ax3 = gca;
 
+basedir = '/cmap/projects/repurposing/jnwork/batch_effect/REP_brew_level_suspects';
+
 for ii = 1:length(cells)
     
-    this_susp = parse_gctx(strtrim(ls(fullfile('/cmap/users/jnasser/dpeak_v2/data/A2_suspect_matrices/',sprintf('%s*SUSP*.gctx',cells{ii})))));
-    this_brew = parse_gctx(strtrim(ls(fullfile('/cmap/users/jnasser/dpeak_v2/data/A2_suspect_matrices/',sprintf('%s*BREW*.gctx',cells{ii})))));
+    this_susp = parse_gctx(strtrim(ls(fullfile(basedir,sprintf('*suspects_%s*.gctx',cells{ii})))));
+    this_brew = parse_gctx(strtrim(ls(fullfile(basedir,sprintf('*BREW_%s*.gctx',cells{ii})))));
+    
+    has_num_rep = cell2mat(this_brew
     
     %[f,x] = ecdf(this_susp.mat(:));
     figure(1)
@@ -47,7 +51,7 @@ ax.YLim = [0 1];
 ax.YTick = [.8 .85 .9:.025:1];
 grid on
 legend show
-namefig('A2_susp_cdf')
+namefig('REP_susp_cdf')
 
 figure(2)
 title(sprintf('CDF of suspect z-scores per signature \n cutoff = %d',susp_cutoff))
@@ -57,7 +61,7 @@ ylabel('cdf')
 legend show
 ax = gca;
 ax.YTick = [0 .2 .4 .5 .6 .8 1];
-namefig('A2_susp_per_sig_cdf')
+namefig('REP_susp_per_sig_cdf')
 
 figure(3)
 title(sprintf('CDF of suspect z-scores per signature in gene set \n cutoff = %d',susp_cutoff))
@@ -67,7 +71,7 @@ grid on
 legend show
 ax = gca;
 ax.YTick = [0 .2 .4 .5 .6 .8 1];
-namefig('A2_susp_per_sig_gene_set_cdf')
+namefig('REP_susp_per_sig_gene_set_cdf')
 
 
 %savefigures('mkdir',false,'out','/cmap/users/jnasser/dpeak_v2/fig/A2_suspect','overwrite',true)

@@ -1,4 +1,8 @@
-function run_single_susp(brew,susp,susp_cutoff,cell_name)
+function [per_sample_susp,per_sample_susp_in_gene_set] = run_single_susp(brew,susp,susp_cutoff,cell_name,varargin)
+
+params = {'mkfig'};
+dflts = {true};
+arg = parse_args(params,dflts,varargin{:});
 
 %% Check IDs
 common_ids = intersect(brew.cid,susp.cid);
@@ -9,30 +13,34 @@ assert(isequal(brew.rid,susp.rid))
 assert(isequal(brew.cid,susp.cid))
 
 %% Overall CDF
-figure
-[~,~,x,f] = kde(susp.mat(:),2^10,0,50);
-plot(x,f);
-hold on
-title('Suspiciousness CDF')
-xlabel('Suspiciousness')
-grid on
-namefig(strcat(cell_name,'_susp_cdf'))
-xlim([3 10])
+if arg.mkfig
+    figure
+    [~,~,x,f] = kde(susp.mat(:),2^10,0,50);
+    plot(x,f);
+    hold on
+    title([cell_name ' - Suspiciousness CDF'])
+    xlabel('Suspiciousness')
+    grid on
+    namefig(strcat(cell_name,'_susp_cdf'))
+    xlim([3 10])
+end
 
 %% Susp per sample
-figure
 per_sample_susp = sum(susp.mat > susp_cutoff);
 med = median(per_sample_susp);
-histogram(per_sample_susp)%,'normalization','cdf')
-hold on
-ax = gca;
-plot([med med],[0 ax.YLim(2)],'r-')
-title_str = sprintf('Suspect genes per signature\n cutoff = %d \n num_sig = %d\n median = %d',susp_cutoff,length(brew.cid),med);
-title(title_str,'Interpreter','none')
-xlabel('Number of Suspect Genes')
-ylabel('Count')
-xlim([0 200])
-namefig(strcat(cell_name,'_susp_per_sig'))
+if arg.mkfig
+    figure
+    histogram(per_sample_susp)%,'normalization','cdf')
+    hold on
+    ax = gca;
+    plot([med med],[0 ax.YLim(2)],'r-')
+    title_str = sprintf('%s - Suspect genes per signature\n cutoff = %d \n num_sig = %d\n median = %d',cell_name,susp_cutoff,length(brew.cid),med);
+    title(title_str,'Interpreter','none')
+    xlabel('Number of Suspect Genes')
+    ylabel('Count')
+    xlim([0 200])
+    namefig(strcat(cell_name,'_susp_per_sig'))
+end
 
 %% Number of suspects in top/bottom N genes
 N = 50;
@@ -50,26 +58,29 @@ for ii = 1:length(brew.cid)
     per_sample_susp_in_gene_set(ii) = sum(susp.mat(temp_idx,ii) > susp_cutoff);
 end
 
-figure
-histogram(per_sample_susp_in_gene_set)%,'normalization','cdf')
-med = median(per_sample_susp_in_gene_set);
-hold on
-ax = gca;
-plot([med med],[0 ax.YLim(2)],'r-')
-title_str = sprintf('Suspiscouss entries in gene set per signature\n cutoff = %d \n num_sig = %d',susp_cutoff,length(brew.cid));
-title(title_str,'Interpreter','none')
-xlabel('Number of Suspect Genes in top/bottom 50')
-ylabel('Count')
-namefig(strcat(cell_name,'_susp_per_sig_gene_set'))
+if arg.mkfig
+    figure
+    histogram(per_sample_susp_in_gene_set)%,'normalization','cdf')
+    med = median(per_sample_susp_in_gene_set);
+    hold on
+    ax = gca;
+    plot([med med],[0 ax.YLim(2)],'r-')
+    title_str = sprintf('%s - Suspect entries in gene set per signature\n cutoff = %d \n num_sig = %d \n median = %d',cell_name,susp_cutoff,length(brew.cid),med);
+    title(title_str,'Interpreter','none')
+    xlabel('Number of Suspect Genes in top/bottom 50')
+    ylabel('Count')
+    namefig(strcat(cell_name,'_susp_per_sig_gene_set'))
 
-%Scatter
-figure
-scatter(per_sample_susp,per_sample_susp_in_gene_set)
-xlabel('Number of suspects per sample')
-ylabel('Number of suspects in gene set per sample')
-ax = gca;
-temp_lim = min(horzcat(ax.YLim(2),ax.XLim(2)));
-hold on
-plot([0 temp_lim],[0 temp_lim],'r:')
-namefig(strcat(cell_name,'_susp_scatter'))
+    %Scatter
+    figure
+    scatter(per_sample_susp,per_sample_susp_in_gene_set)
+    xlabel('Number of suspects per sample')
+    ylabel('Number of suspects in gene set per sample')
+    title(cell_name)
+    ax = gca;
+    temp_lim = min(horzcat(ax.YLim(2),ax.XLim(2)));
+    hold on
+    plot([0 temp_lim],[0 temp_lim],'r:')
+    namefig(strcat(cell_name,'_susp_scatter'))
+end
 
